@@ -4,9 +4,13 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const connectDB = require('./db/connect')
+const productsRouter = require('./routes/products')
+
 const notFoundMiddleWare = require("./middleware/not-found");
 const errorMiddleWare = require("./middleware/error-handler");
-const notFound = require("./middleware/not-found");
+
+
 
 //middleware
 app.use(express.json());
@@ -17,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 //products route
+app.use("/api/v1/products", productsRouter)
 
 app.use(notFoundMiddleWare)
 app.use(errorMiddleWare)
@@ -27,7 +32,8 @@ const host = process.env.HOST
 const start = async () => {
     try {
         //connect DB
-        app.listen(port, console.log(`Server is listening on ${host} port ${port}`))
+        await connectDB(process.env.MONGO_URI)
+        app.listen(port, console.log(`Server is listening on ${host} port ${port}...`))
     } catch (error) {
         console.log(error)
     }
